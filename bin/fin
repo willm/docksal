@@ -3227,6 +3227,7 @@ update_virtualbox () {
 
 	# Download and install Mac
 	is_mac && (
+		is_mac && echo-yellow "NOTICE: Allow kernel extension from Oracle in Security Preferences if prompted!" && sleep 1
 		echo "Attaching ${vbox_pkg}"
 		hdiutil detach "/Volumes/VirtualBox" >/dev/null 2>&1
 		hdiutil attach "$vbox_pkg" -quiet &&
@@ -3243,7 +3244,6 @@ update_virtualbox () {
 
 	# Wait for installation to finish
 	echo
-	is_mac && echo-yellow "NOTICE: Allow kernel extension from Oracle in Security Preferences when prompted!" && sleep 1
 
 	if ! is_tty; then
 		echo "Please finish VirtualBox installation using installer (Ctrl+C to exit)..."
@@ -3255,6 +3255,10 @@ update_virtualbox () {
 	done
 
 	if is_mac && ! (kextstat | grep VBoxNetAdp >/dev/null); then
+		echo "Verifying VirtualBox installation..."
+		sleep 10
+		# If kext loaded after 10 seconds then exit
+		(kextstat | grep VBoxNetAdp >/dev/null) && return
 		echo
 		echo-yellow "VirtualBox kernel extension was not loaded. Starting installation once again to fix it."
 		echo "Attaching ${vbox_pkg}"
