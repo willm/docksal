@@ -52,5 +52,5 @@ services:
       - /tmp:/tmp
       - /usr:/usr
       - /var:/var
-    command: "sh -c '(apk add --update bash curl sudo git); (curl -fsSL https://get.docksal.io | CI=true bash)'"
+    command: sh -c "curl -fsSL https://get.docksal.io | CI=true bash && docker pull "
     privileged: true
