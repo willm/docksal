@@ -1,0 +1,58 @@
+version: "2.1"
+
+services:
+  docksal-vhost-proxy:
+    container_name: docksal-vhost-proxy
+    image: ${IMAGE_VHOST_PROXY:-docksal/vhost-proxy:1.2}
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - docksal_projects
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - io.docksal.group=system
+    environment:
+      - ACCESS_LOG=${DOCKSAL_VHOST_PROXY_ACCESS_LOG:-0}
+      - DEBUG_LOG=${DOCKSAL_VHOST_PROXY_DEBUG_LOG:-0}
+      - STATS_LOG=${DOCKSAL_VHOST_PROXY_STATS_LOG:-0}
+      - PROJECT_INACTIVITY_TIMEOUT=${PROJECT_INACTIVITY_TIMEOUT:-0}
+      - PROJECT_DANGLING_TIMEOUT=${PROJECT_DANGLING_TIMEOUT:-0}
+    restart: always
+
+  docksal-dns:
+    container_name: docksal-dns
+    image: ${IMAGE_DNS:-docksal/dns:1.0}
+    ports:
+      - 53:53/udp
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - io.docksal.group=system
+    environment:
+      - DNS_IP=${DOCKSAL_IP}
+      - DNS_DOMAIN=${DOCKSAL_DNS_DOMAIN}
+      - LOG_QUERIES=${DOCKSAL_DNS_DEBUG}
+    dns:
+      - ${DOCKSAL_DNS_UPSTREAM}
+      - 8.8.4.4
+    cap_add:
+      - NET_ADMIN
+    restart: always
+
+  docksal-ssh-agent:
+    container_name: docksal-ssh-agent
+    image: ${IMAGE_SSH_AGENT:-docksal/ssh-agent:1.0}
+    volumes:
+      - docksal_ssh_agent
+    labels:
+      - io.docksal.group=system
+    restart: always
+
+volumes:
+  docksal_projects:
+  docksal_ssh_agent:
+
+
+networks:
+  docksal:
