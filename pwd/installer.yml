@@ -4,38 +4,44 @@ services:
   docksal-vhost-proxy:
     image: ${IMAGE_VHOST_PROXY:-docksal/vhost-proxy:1.2}
     entrypoint: hostname
-    restart_policy:
-      condition: none
+    deploy:
+      restart_policy:
+        condition: none
 
   docksal-dns:
     image: ${IMAGE_DNS:-docksal/dns:1.0}
     entrypoint: hostname
-    restart_policy:
-      condition: none
+    deploy:
+      restart_policy:
+        condition: none
 
   docksal-ssh-agent:
     image: ${IMAGE_SSH_AGENT:-docksal/ssh-agent:1.0}
     entrypoint: hostname
-    restart_policy:
-      condition: none
+    deploy:
+      restart_policy:
+        condition: none
 
   docksal-web:
     image: ${IMAGE_WEB:-docksal/web:2.1-apache2.4}
     entrypoint: hostname
-    restart_policy:
-      condition: none
+    deploy:
+      restart_policy:
+        condition: none
 
   docksal-db:
     image: ${IMAGE_DB:-docksal/db:1.2-mysql-5.6}
     entrypoint: hostname
-    restart_policy:
-      condition: none
+    deploy:
+      restart_policy:
+        condition: none
 
   docksal-cli:
     image: ${IMAGE_CLI:-docksal/cli:2.2-php7.1}
     entrypoint: hostname
-    restart_policy:
-      condition: none
+    deploy:
+      restart_policy:
+        condition: none
 
   docksal-installer:
     container_name: docksal-installer
@@ -59,5 +65,6 @@ services:
       - /usr:/usr
       - /var:/var
     command: sh -c "curl -fsSL https://get.docksal.io | CI=true bash"
-    restart_policy:
-      condition: none
+    deploy:
+      restart_policy:
+        condition: none
