@@ -44,7 +44,6 @@ services:
 #        condition: none
 
   docksal-installer:
-    container_name: docksal-installer
     image: franela/dind
     volumes:
       #- /bin:/bin
