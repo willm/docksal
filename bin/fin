@@ -78,7 +78,7 @@ is_mac ()
 # CI
 is_ci ()
 {
-	[[ "$CI" != "" ]]
+	[[ "$CI" == "1" ]]
 }
 
 # Play with Docker
@@ -264,6 +264,7 @@ DOCKER_NATIVE="${DOCKER_NATIVE:-0}"
 
 # SSH agent settings
 if is_ci; then
+echo "ci"
 	# Prefer the host's agent in CI environments
 	DOCKSAL_SSH_AGENT_USE_HOST="${DOCKSAL_SSH_AGENT_USE_HOST:-1}"
 else
@@ -1103,6 +1104,7 @@ is_winpty_version ()
 
 is_proxy_sshagent ()
 {
+	echo $DOCKSAL_SSH_AGENT_USE_HOST 
 	[[ "$DOCKSAL_SSH_AGENT_USE_HOST" == "1" ]] && ! is_linux
 }
 
