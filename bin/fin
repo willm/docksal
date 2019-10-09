@@ -3011,10 +3011,8 @@ up ()
 	unison_sync_wait
 
 	# TODO: maybe move these into a function and call in other places - reset/restart.
-	[[ "${PROJECT_URL}" != "" ]] &&
-		echo-green "Project URL: ${yellow}${PROJECT_URL}${NC}"
-	[[ "${IDE_ENABLED}" == "1" ]] &&
-		echo-green "Web IDE URL: ${yellow}${PROJECT_IDE_URL}${NC}"
+	if [[ "${PROJECT_URL}" != "" ]]; then echo-green "Project URL: ${yellow}${PROJECT_URL}${NC}"; fi
+	if [[ "${IDE_ENABLED}" == "1" ]]; then echo-green "Web IDE URL: ${yellow}${PROJECT_IDE_URL}${NC}"; fi
 }
 
 # Stop containers
