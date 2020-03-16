@@ -6123,6 +6123,12 @@ load_configuration ()
 			COMPOSE_FILE="${COMPOSE_FILE}${SEPARATOR}${overrides_ide_file}"
 		fi
 
+		# Enable xdebug in separate cli container
+		overrides_xdebug_file="$(get_config_dir_dc)/stacks/overrides-xdebug.yml"
+		if [[ -f "${overrides_xdebug_file}" ]] && [[ "$XDEBUG_ENABLED" != "" ]] && [[ "$XDEBUG_ENABLED" != "0" ]]; then
+			COMPOSE_FILE="${COMPOSE_FILE}${SEPARATOR}${overrides_xdebug_file}"
+		fi
+
 		overrides_xhprof_file="$(get_config_dir_dc)/stacks/overrides-xhprof.yml"
 		if [[ -f "${overrides_xhprof_file}" ]] && [[ "$XHPROF_ENABLED" != "" ]] && [[ "$XHPROF_ENABLED" != "0" ]]; then
 			COMPOSE_FILE="${COMPOSE_FILE}${SEPARATOR}${overrides_xhprof_file}"
