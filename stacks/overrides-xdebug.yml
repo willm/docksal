@@ -10,9 +10,18 @@ services:
       service: cli
     hostname: cli-xdebug
     environment:
-      # Point xdebug to the dbgp server (started by IDE) in the ide container.
-      # This is only necessary for debugging php cli sessions initiated directly in the IDE.
-      # Normally, you'd be launching a cli script manually inside the cli container and not inside IDE (ide container).
-      - XDEBUG_CONFIG=remote_host=xdebug remote_port=9000
       - VIRTUAL_HOST=xdebug-${VIRTUAL_HOST}
+      - XDEBUG_ENABLED=1
+      # TODO: remove xdebug.remote_connect_back in June 2020
+      # See https://github.com/docksal/docksal/issues/1238#issuecomment-566779905
+      - XDEBUG_CONFIG=remote_connect_back=0 remote_host=${DOCKSAL_HOST_IP} # Point xdebug to the listener on the host
+      - PHP_IDE_CONFIG # This helps with console scripts debugging in PHPStorm (the values is set in docksal-local.env)
+      - DRUSH_ALLOW_XDEBUG=1
       - DRUSH_OPTIONS_URI=xdebug-${VIRTUAL_HOST}
+      - COMPOSER_ALLOW_XDEBUG=1
+      - COMPOSER_DISABLE_XDEBUG_WARN=1
+    volumes:
+      - cli_xdebug_home:/home/docker
+
+volumes:
+  cli_xdebug_home:  # /home/docker volume for xdebug cli

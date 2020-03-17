@@ -21,6 +21,7 @@ services:
       - APACHE_FCGI_HOST_PORT=cli:9000
       - APACHE_BASIC_AUTH_USER
       - APACHE_BASIC_AUTH_PASS
+      - XDEBUG_ENABLED=${XDEBUG_ENABLED:-0}
     dns:
       - ${DOCKSAL_DNS1}
       - ${DOCKSAL_DNS2}
@@ -42,6 +43,7 @@ services:
       - APACHE_FCGI_HOST_PORT=cli:9000
       - APACHE_BASIC_AUTH_USER
       - APACHE_BASIC_AUTH_PASS
+      - XDEBUG_ENABLED=${XDEBUG_ENABLED:-0}
     dns:
       - ${DOCKSAL_DNS1}
       - ${DOCKSAL_DNS2}
@@ -63,6 +65,7 @@ services:
     - NGINX_SERVER_ROOT=/var/www/${DOCROOT}
     - NGINX_BASIC_AUTH_USER
     - NGINX_BASIC_AUTH_PASS
+    - XDEBUG_ENABLED=${XDEBUG_ENABLED:-0}
     dns:
     - ${DOCKSAL_DNS1}
     - ${DOCKSAL_DNS2}
@@ -146,12 +149,12 @@ services:
       - HOST_GID
       - DOCROOT
       - VIRTUAL_HOST
-      - XDEBUG_ENABLED=${XDEBUG_ENABLED:-0}
+      - XDEBUG_ENABLED=0
       # TODO: remove xdebug.remote_connect_back in June 2020
       # See https://github.com/docksal/docksal/issues/1238#issuecomment-566779905
       - XDEBUG_CONFIG=remote_connect_back=0 remote_host=${DOCKSAL_HOST_IP} # Point xdebug to the listener on the host
       - PHP_IDE_CONFIG # This helps with console scripts debugging in PHPStorm (the values is set in docksal-local.env)
-      - DRUSH_ALLOW_XDEBUG=${XDEBUG_ENABLED:-0}
+      - DRUSH_ALLOW_XDEBUG=0
       - DRUSH_OPTIONS_URI=${VIRTUAL_HOST}
       - BLACKFIRE_CLIENT_ID
       - BLACKFIRE_CLIENT_TOKEN
@@ -166,8 +169,8 @@ services:
       - MYSQL_USER
       - MYSQL_PASSWORD
       - MYSQL_DATABASE
-      - COMPOSER_ALLOW_XDEBUG=${XDEBUG_ENABLED:-0}
-      - COMPOSER_DISABLE_XDEBUG_WARN=${XDEBUG_ENABLED:-0}
+      - COMPOSER_ALLOW_XDEBUG=0
+      - COMPOSER_DISABLE_XDEBUG_WARN=0
     dns:
       - ${DOCKSAL_DNS1}
       - ${DOCKSAL_DNS2}
