@@ -4,28 +4,15 @@
 version: "2.1"
 
 services:
-
-  cli:
-    environment:
-      - XDEBUG_CONFIG=remote_host=xdebug remote_port=9000  # Point xdebug to the dbgp client in the ide container
-
-  xdebug:
+  cli-xdebug:
     extends:
       file: ${HOME}/.docksal/stacks/services.yml
       service: cli
-    hostname: xdebug
-    expose:
-      - 9000  # dbgp server port for xdebug to connect to
+    hostname: cli-xdebug
     environment:
       # Point xdebug to the dbgp server (started by IDE) in the ide container.
       # This is only necessary for debugging php cli sessions initiated directly in the IDE.
       # Normally, you'd be launching a cli script manually inside the cli container and not inside IDE (ide container).
       - XDEBUG_CONFIG=remote_host=xdebug remote_port=9000
-    labels:
-      - io.docksal.virtual-host=xdebug-${VIRTUAL_HOST},xdebug-${VIRTUAL_HOST}.*
-      - io.docksal.virtual-port=8080
-      - io.docksal.cert-name=${VIRTUAL_HOST_CERT_NAME:-none}
-    depends_on:
-      # Avoid race conditions between ide and cli, since they share the same volumes
-      # TODO: handle this better in the entrypoint script
-      - cli
+      - VIRTUAL_HOST=xdebug-${VIRTUAL_HOST}
+      - DRUSH_OPTIONS_URI=xdebug-${VIRTUAL_HOST}
