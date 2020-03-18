@@ -4,24 +4,27 @@
 version: "2.1"
 
 services:
-  cli-xdebug:
+  cli:
     extends:
       file: ${HOME}/.docksal/stacks/services.yml
       service: cli
-    hostname: cli-xdebug
+    depends_on:
+      # Avoid race conditions between cli-xdebug and cli, since they share the same volumes
+      # TODO: handle this better in the entrypoint script
+      - xdebug-cli
+
+  xdebug-cli:
+    extends:
+      file: ${HOME}/.docksal/stacks/services.yml
+      service: cli
+    hostname: xdebug-cli
     environment:
-      - VIRTUAL_HOST=xdebug-${VIRTUAL_HOST}
       - XDEBUG_ENABLED=1
       # TODO: remove xdebug.remote_connect_back in June 2020
       # See https://github.com/docksal/docksal/issues/1238#issuecomment-566779905
       - XDEBUG_CONFIG=remote_connect_back=0 remote_host=${DOCKSAL_HOST_IP} # Point xdebug to the listener on the host
       - PHP_IDE_CONFIG # This helps with console scripts debugging in PHPStorm (the values is set in docksal-local.env)
       - DRUSH_ALLOW_XDEBUG=1
-      - DRUSH_OPTIONS_URI=xdebug-${VIRTUAL_HOST}
       - COMPOSER_ALLOW_XDEBUG=1
       - COMPOSER_DISABLE_XDEBUG_WARN=1
-    volumes:
-      - cli_xdebug_home:/home/docker
 
-volumes:
-  cli_xdebug_home:  # /home/docker volume for xdebug cli
