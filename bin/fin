@@ -213,11 +213,12 @@ CONFIG_SSHPROXY_PID="$CONFIG_DIR/.sshproxy.pid"
 DOCKER_BIN="$CONFIG_BIN_DIR/docker"
 DOCKER_COMPOSE_BIN="$CONFIG_BIN_DIR/docker-compose"
 DOCKER_MACHINE_BIN="$CONFIG_BIN_DIR/docker-machine"
-WINPTY_BIN="$CONFIG_BIN_DIR/winpty"
+VBOXMANAGE_BIN="$CONFIG_BIN_DIR/VBoxManage"
+VBOXMANAGE_BIN_WIN="/mnt/c/Program Files/Oracle/VirtualBox/VBoxManage.exe"
 vboxmanage="VBoxManage"
 is_windows && vboxmanage="/cygdrive/c/Program Files/Oracle/VirtualBox/VBoxManage.exe"
-is_wsl && vboxmanage="/mnt/c/Program Files/Oracle/VirtualBox/VBoxManage.exe"
 CONFIG_DOCKER_MACHINE_ENV="$CONFIG_DOCKER_MACHINE_DIR/machine.env"
+WINPTY_BIN="$CONFIG_BIN_DIR/winpty"
 
 # Custom certs folder for vhost-proxy (overridable)
 CONFIG_CERTS=${CONFIG_CERTS:-$CONFIG_DIR/certs}
@@ -4674,32 +4675,23 @@ install_tools_wsl ()
 		fi
 	fi
 
-	# Install Windows Docker Machine client.
-	# The Linux one cannot correctly interact with the Windows VirtualBox cli, eventually resulting in something like:
-	# "Error creating machine: Error in driver during machine creation: write |1: broken pipe"
-	# The Windows binary has to be run from the Windows FS (e.g. from Windows user's profile).
-	local USERPROFILE=$(wsl_path -u $(wsl_env USERPROFILE))
-	local DOCKER_MACHINE_BIN_WSL="${USERPROFILE}/.docksal/bin/docker-machine.exe"
-	mkdir -p "${USERPROFILE}/.docksal/bin"
-	# Keeping the rest of the logic below very similar to other host environments.
+	# Install docker-machine
 	if ! is_docker_machine_version; then
-		local dm_pkg=$(basename "$URL_DOCKER_MACHINE_WIN")
+		local dm_pkg=$(basename "$URL_DOCKER_MACHINE_NIX")
 		echo-green "Installing docker-machine v${REQUIREMENTS_DOCKER_MACHINE}..."
 		if [[ ! -f "$dm_pkg" ]]; then
 			echo-green "Downloading ${dm_pkg}..."
-			# Note: chmod +x is not necessary here. WSL sees Windows files with 777 permissions.
-			curl -fL# "$URL_DOCKER_MACHINE_WIN" -o "$DOCKER_MACHINE_BIN_WSL"
+			curl -fL# "$URL_DOCKER_MACHINE_NIX" -o "$DOCKER_MACHINE_BIN" && \
+				chmod +x "$DOCKER_MACHINE_BIN"
 			if_failed "Check file permissions and internet connection."
 		# Use a local/portable copy if available
 		else
 			echo "Found a local copy of ${dm_pkg}. Using it..."
-			# Note: chmod +x is not necessary here. WSL sees Windows files with 777 permissions.
-			cp -f "$dm_pkg" "$DOCKER_MACHINE_BIN_WSL"
+			cp -f "$dm_pkg" "$DOCKER_MACHINE_BIN" && \
+				chmod +x "$DOCKER_MACHINE_BIN"
 			if_failed "Check file permissions."
 		fi
 	fi
-	# Create a symlink to the Windows docker-machine binary inside the WSL FS.
-	ln -sf "$DOCKER_MACHINE_BIN_WSL" "$DOCKER_MACHINE_BIN"
 }
 
 # Installs VirtualBox on Mac/Windows
@@ -4760,6 +4752,8 @@ install_virtualbox () {
 	(is_windows || is_wsl) && (
 		# Note: chmod +x is not necessary here. WSL sees Windows files with 777 permissions.
 		"$vbox_pkg"
+		# Create a symlink to the Windows VBoxManage binary inside the WSL FS.
+		ln -sf "$VBOXMANAGE_BIN_WIN" "$VBOXMANAGE_BIN"
 	)
 
 	# Wait for installation to finish
