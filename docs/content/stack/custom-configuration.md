@@ -48,7 +48,7 @@ Variable values can be statically set or passed from the host. See example below
 Advanced users can manage their project stack configuration with pure docker-compose. 
 
 Custom configurations do not include a managed stack (this is the key different between custom and customized configurations). 
-The complete docker-compose definition is managed via the `.docksa/docksal.yml` file.
+The complete docker-compose definition is managed via the `.docksal/docksal.yml` file.
 
 To switch to a custom configuration stack, run this in your project directory:
 
